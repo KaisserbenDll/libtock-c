@@ -3,7 +3,11 @@
 #include "timer.h"
 #include <limits.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 
+#include <console.h>
 // Returns < 0 if exp0 is earlier, > 0 if exp1 is earlier, and 0
 // if they are equal.
 static int cmp_exp(uint32_t now, uint32_t exp0, uint32_t exp1) {
@@ -166,8 +170,10 @@ void timer_every(uint32_t ms, subscribe_cb cb, void* ud, tock_timer_t* repeating
 void timer_cancel(tock_timer_t* timer) {
   alarm_cancel(&timer->alarm);
 }
+// volatile int i = 0;
 
 void delay_ms(uint32_t ms) {
+  
   void delay_cb(__attribute__ ((unused)) int unused0,
                 __attribute__ ((unused)) int unused1,
                 __attribute__ ((unused)) int unused2,
@@ -178,7 +184,7 @@ void delay_ms(uint32_t ms) {
   bool cond = false;
   tock_timer_t timer;
   timer_in(ms, delay_cb, &cond, &timer);
-  yield_for(&cond);
+  //yield_for(&cond);
 }
 
 int yield_for_with_timeout(bool* cond, uint32_t ms) {

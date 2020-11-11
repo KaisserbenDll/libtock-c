@@ -24,7 +24,7 @@ int main(void) {
   void* ptr3 = malloc(20);
   use_buffer(ptr3, 20);
 
-  printf("malloc01: success\n");
+  //printf("malloc01: success\n");
 
   return 0;
 }

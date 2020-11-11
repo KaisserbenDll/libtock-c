@@ -116,7 +116,6 @@ void _start(void* app_start __attribute__((unused)),
                                 // then we need to move the stack pointer
                                 // before we call the `brk` syscall.
     "mov  sp, r4\n"             // Update the stack pointer.
-    "mov  r9, sp\n"
     //
     "skip_set_sp:\n"            // Back to regularly scheduled programming.
     //
@@ -141,16 +140,24 @@ void _start(void* app_start __attribute__((unused)),
     "movs r1, r5\n"
     "svc 4\n"                   // memop
     //
-    // Setup initial stack pointer for normal execution
+    // Setup initial stack pointer for normal execution. If we did this before
+    // then this is redundant and just a no-op. If not then no harm in
+    // re-setting it.
     "mov  sp, r4\n"
-    "mov  r9, sp\n"
+    //
+    // Set the special PIC register r9. This has to be set to the address of the
+    // beginning of the GOT section. The PIC code uses this as a reference point
+    // to enable the RAM section of the app to be at any address.
+    "ldr  r0, [r6, #4]\n"       // r0 = myhdr->got_start
+    "add  r0, r0, r7\n"         // r0 = myhdr->got_start + mem_start
+    "mov  r9, r0\n"             // r9 = r0
     //
     // Call into the rest of startup.
     // This should never return, if it does, trigger a breakpoint (which will
     // promote to a HardFault in the absence of a debugger)
     "movs r0, r6\n"             // first arg is app_start
     "movs r1, r7\n"             // second arg is mem_start
-    "bl _c_start\n"
+    "bl _c_start_pic\n"
     "bkpt #255\n"
     );
 
@@ -230,7 +237,7 @@ void _start(void* app_start __attribute__((unused)),
     "mv   a0, s0\n"             // first arg is app_start
     "mv   s0, sp\n"             // Set the frame pointer to sp.
     "mv   a1, s2\n"             // second arg is mem_start
-    "jal  _c_start\n"
+    "jal  _c_start_nopic\n"
     );
 
 #else
@@ -247,7 +254,7 @@ void _start(void* app_start __attribute__((unused)),
 // - `mem_start`: The starting address of the memory region assigned to this
 //   app.
 __attribute__((noreturn))
-void _c_start(uint32_t app_start, uint32_t mem_start) {
+void _c_start_pic(uint32_t app_start, uint32_t mem_start) {
   struct hdr* myhdr = (struct hdr*)app_start;
 
   // Fix up the Global Offset Table (GOT).
@@ -316,6 +323,43 @@ void _c_start(uint32_t app_start, uint32_t mem_start) {
       *target = (*target ^ 0x80000000) + app_start;
     }
   }
+
+  main();
+  while (1) {
+    yield();
+  }
+}
+
+// C startup routine for apps compiled with fixed addresses (i.e. no PIC).
+//
+// Arguments:
+// - `app_start`: The address of where the app binary starts in flash. This does
+//   not include the TBF header or any padding before the app.
+// - `mem_start`: The starting address of the memory region assigned to this
+//   app.
+__attribute__((noreturn))
+void _c_start_nopic(uint32_t app_start, uint32_t mem_start) {
+  struct hdr* myhdr = (struct hdr*)app_start;
+
+  // Copy over the Global Offset Table (GOT). The GOT seems to still get created
+  // and used in some cases, even though nothing is being relocated and the
+  // addresses are static. So, all we need to do is copy the GOT entries from
+  // flash to RAM, without doing any address changes. Of course, if the GOT
+  // length is 0 this is a no-op.
+  void* got_start     = (void*)(myhdr->got_start + mem_start);
+  void* got_sym_start = (void*)(myhdr->got_sym_start + app_start);
+  memcpy(got_start, got_sym_start, myhdr->got_size);
+
+  // Load the data section from flash into RAM. We use the offsets from our
+  // crt0 header so we know where this starts and where it should go.
+  void* data_start     = (void*)(myhdr->data_start + mem_start);
+  void* data_sym_start = (void*)(myhdr->data_sym_start + app_start);
+  memcpy(data_start, data_sym_start, myhdr->data_size);
+
+  // Zero BSS segment. Again, we know where this should be in the process RAM
+  // based on the crt0 header.
+  char* bss_start = (char*)(myhdr->bss_start + mem_start);
+  memset(bss_start, 0, myhdr->bss_size);
 
   main();
   while (1) {
