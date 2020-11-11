@@ -60,6 +60,8 @@ else
 #  rv32imc|rv32imc.0x20030040.0x10003400   # RISC-V for OpenTitan
 #  rv32imc|rv32imc_opentitan|0x20030030|0x10004400\ ipc led 
 #  rv32imc|rv32imc_opentitan|0x20031034|0x100073B0\ ipc logic
+#  rv32imc|rv32imc.0x20030080.0x10005000|0x20030080|0x10005000\ wrong addresses by tock 
+
 TOCK_TARGETS ?= cortex-m0\
                 cortex-m3\
                 cortex-m4\
@@ -83,11 +85,19 @@ ELF2TAB_ARGS += -n $(PACKAGE_NAME)
 ELF2TAB_ARGS += --stack $(STACK_SIZE) --app-heap $(APP_HEAP_SIZE) --kernel-heap $(KERNEL_HEAP_SIZE)
 
 # Setup the correct toolchain for each architecture.
+<<<<<<< HEAD
 override TOOLCHAIN_cortex-m0 = arm-none-eabi
 override TOOLCHAIN_cortex-m3 = arm-none-eabi
 override TOOLCHAIN_cortex-m4 = arm-none-eabi
 override TOOLCHAIN_rv32imac = riscv64-unknown-elf
 override TOOLCHAIN_rv32imc = riscv64-unknown-elf
+=======
+TOOLCHAIN_cortex-m0 := arm-none-eabi
+TOOLCHAIN_cortex-m3 := arm-none-eabi
+TOOLCHAIN_cortex-m4 := arm-none-eabi
+TOOLCHAIN_rv32imac := riscv64-unknown-elf
+TOOLCHAIN_rv32imc := riscv64-unknown-elf
+>>>>>>> 81459764be3b2aad61bd56c3dec7b2ad38c7bd4c
 
 # Flags for building app Assembly, C, C++ files
 # n.b. make convention is that CPPFLAGS are shared for C and C++ sources
@@ -353,4 +363,3 @@ ifneq ($(V),)
 endif
 
 endif
-
