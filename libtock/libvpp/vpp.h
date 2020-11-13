@@ -4,11 +4,13 @@
 extern "C" {
 #endif
 #define VPP_DRIVER_NUM 0x90100
+#define DRIVER_NUM_ALARM 0x0
 
 // Index of an element in a typed array 
 typedef uint16_t MK_Index_t;
 
 typedef uint32_t MK_HANDLE_t;
+typedef uint64_t MK_TIME_t;
 // Identifiers need to be changed
 typedef uint16_t MK_PROCESS_ID_u;
 typedef uint16_t MK_MAILBOX_ID_u;
@@ -34,7 +36,7 @@ typedef enum {
  // Gerneric Functions 
     // MK_BITMAP_t _mk_Get_Exception(MK_HANDLE_t _hProcess);
     MK_ERROR_e _mk_Get_Error(MK_HANDLE_t _hProcess);
-    //MK_TIME_t _mk_Get_Time(void);
+    MK_TIME_t _mk_Get_Time(void);
 
 // Process Management 
     MK_HANDLE_t _mk_Get_Process_Handle(MK_PROCESS_ID_u _eProcess_ID);
@@ -50,7 +52,12 @@ typedef enum {
 
 // Mailbox Management 
 //    MK_HANDLE_t _mk_Get_Mailbox_Handle(MK_MAILBOX_ID_u _eMailboxID)
-
+// Get a Mailbox Handle from a Mailbox Identifier 
+MK_HANDLE_t _mk_Get_Mailbox_Handle(MK_MAILBOX_ID_u _eMailboxID);
+// Send a Signal to a specific mailbox
+MK_ERROR_e _mk_Send_Signal(MK_HANDLE_t _hMailbox, MK_BITMAP_t _eSignal);
+// Retrieve last Signal from Mailbox. Signals are cleared once read.
+MK_BITMAP_t _mk_Get_Signal(MK_HANDLE_t _hMailbox);
 
 
 // IPC Management 
@@ -61,8 +68,12 @@ typedef enum {
 //int Share_Slice(MK_HANDLE_t _hIPC);
 
 // Firmware Management
+// misc
+const char *buf[128] __attribute__((aligned(64)));
 
+const char* register_share(void);
 
+int some_subscribe_test(MK_HANDLE_t _hIPC, subscribe_cb callback,  void* ud);
 
 #ifdef __cplusplus
 }

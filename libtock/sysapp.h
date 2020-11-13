@@ -29,7 +29,7 @@ typedef enum {
 // 3) Wait for the signal MK_IPC_UPDATED on the MK_MAILBOX_MGT_MAIN_ID
 // 4) Read the response from a data structure through the IPC MK_IPC_MGT_MAIN_ID
 
-int send_command_main_mgt(int command);
+//int send_command_main_mgt(int command);
 
 #ifdef __cplusplus
 }

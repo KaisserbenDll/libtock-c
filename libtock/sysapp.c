@@ -23,4 +23,4 @@ int send_command_main_mgt(int command){
 
     return 0;
 }*/
-int send_command_main_mgt(int command){}
+//int send_command_main_mgt(int command){}

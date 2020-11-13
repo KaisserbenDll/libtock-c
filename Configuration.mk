@@ -68,7 +68,7 @@ TOCK_TARGETS ?= cortex-m0\
                 rv32imac|rv32imac.0x20040040.0x80002400|0x20040040|0x80002400\
                 rv32imac|rv32imac.0x40430060.0x80004000|0x40430060|0x80004000\
                 rv32imac|rv32imac.0x40440060.0x80007000|0x40440060|0x80007000\
-                rv32imc|rv32imc_opentitan|0x20030030|0x10004400\
+                rv32imc|rv32imc_opentitan|0x20030080|0x10004400\
                 rv32imac|rv32imac_hifive|0x20040040|0x80002800
 endif
 
@@ -85,19 +85,11 @@ ELF2TAB_ARGS += -n $(PACKAGE_NAME)
 ELF2TAB_ARGS += --stack $(STACK_SIZE) --app-heap $(APP_HEAP_SIZE) --kernel-heap $(KERNEL_HEAP_SIZE)
 
 # Setup the correct toolchain for each architecture.
-<<<<<<< HEAD
-override TOOLCHAIN_cortex-m0 = arm-none-eabi
-override TOOLCHAIN_cortex-m3 = arm-none-eabi
-override TOOLCHAIN_cortex-m4 = arm-none-eabi
-override TOOLCHAIN_rv32imac = riscv64-unknown-elf
-override TOOLCHAIN_rv32imc = riscv64-unknown-elf
-=======
 TOOLCHAIN_cortex-m0 := arm-none-eabi
 TOOLCHAIN_cortex-m3 := arm-none-eabi
 TOOLCHAIN_cortex-m4 := arm-none-eabi
 TOOLCHAIN_rv32imac := riscv64-unknown-elf
 TOOLCHAIN_rv32imc := riscv64-unknown-elf
->>>>>>> 81459764be3b2aad61bd56c3dec7b2ad38c7bd4c
 
 # Flags for building app Assembly, C, C++ files
 # n.b. make convention is that CPPFLAGS are shared for C and C++ sources
