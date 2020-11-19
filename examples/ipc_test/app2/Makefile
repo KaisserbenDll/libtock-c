@@ -3,8 +3,6 @@
 # Specify this directory relative to the current application.
 TOCK_USERLAND_BASE_DIR = ../../..
 
-PACKAGE_NAME = logic_package
-
 # Which files to compile.
 C_SRCS := $(wildcard *.c)
 

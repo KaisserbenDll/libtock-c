@@ -26,5 +26,5 @@ int recieve_command_mgt_main() {
     // Error Handling missing
 }*/
 
-int recieve_command_mgt_main() {}
+//int recieve_command_mgt_main() {}
 

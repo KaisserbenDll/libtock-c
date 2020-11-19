@@ -1,10 +1,13 @@
 #pragma once
+#include <stdlib.h>
+#include <string.h>
 #include "tock.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
 #define VPP_DRIVER_NUM 0x90100
 #define DRIVER_NUM_ALARM 0x0
+#define MK_IPC_MGT_LENGTH 256
 
 // Index of an element in a typed array 
 typedef uint16_t MK_Index_t;
@@ -69,9 +72,15 @@ MK_BITMAP_t _mk_Get_Signal(MK_HANDLE_t _hMailbox);
 
 // Firmware Management
 // misc
-const char *buf[128] __attribute__((aligned(64)));
+extern char buf[128];
+//extern char* share[MK_IPC_MGT_LENGTH];
+extern void* share;
 
-const char* register_share(void);
+
+void* Share(MK_HANDLE_t _hIPC);
+
+void* _mk_Get_IPC_Access(MK_HANDLE_t _hIPC);
+int register_share(void* buffer);
 
 int some_subscribe_test(MK_HANDLE_t _hIPC, subscribe_cb callback,  void* ud);
 

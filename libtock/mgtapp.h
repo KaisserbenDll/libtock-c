@@ -30,7 +30,7 @@ the MGT Process shall:
 3) Send the response data through the IPC MK_IPC_MGT_MAIN_ID
 4) Send the Signal MK_SIGNAL_IPC_UPDATED to the Mailbox MK_MAILBOX_MGT_MAIN_ID
 */
-int recieve_command_mgt_main(void);
+//int recieve_command_mgt_main(void);
 #ifdef __cplusplus
 }
 #endif

@@ -1,22 +1,15 @@
-// #include "mailbox.h"
-#include <timer.h>
 #include "libvpp/vpp.h"
 #include <tock.h>
-// #include "internal/alarm.h"
-volatile int i = 0;
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <console.h>
 
+// Again this is declared as extern buf[128], so both app1 and app2 
+// can access it.
 char buf[128];
-//char* share = 'A';
-
-//void* share;
-
 int main(void) {
-  char str[128];
+  // Since printfs are broken, i am comapring the buf with a string with
+  // the same message. If they are the same, i will see the syscall with
+  // the signal 0x11111111 sent.
+  char str[128]="Sharing";
   memcpy(str,buf,128);
   int result = strcmp(buf, str);
   if (result== 0) {
@@ -25,9 +18,5 @@ int main(void) {
   } else {
   __attribute__((unused)) MK_ERROR_e error2= _mk_Send_Signal(0x8001,0x00000000);
   }
-/*
-  char str[]="Sharing";
-  //printf("%s",str);
-  //  share = "Hello";
-*/
+
 }

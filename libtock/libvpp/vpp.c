@@ -27,25 +27,7 @@ MK_BITMAP_t _mk_Get_Signal(MK_HANDLE_t _hMailbox){
     return command(VPP_DRIVER_NUM,7,_hMailbox,0);
 }
 
-
-
-
-
 /*
-void* _mk_Get_Access_IPC (MK_HANDLE_t _hIPC) {
-    // i am sharing an appslice and putting it in the data.shared_data struct
-    int ret =  allow(VPP_DRIVER_NUM, _hIPC, _shared_memory, 64);
-    return (void*) ret ;
-}*/
-// Another function should call 
-/*
-ipc_03[SIZE_OF_MGT_MAIN_IPC] ;
-void* Share_Slice (MK_HANDLE_t _hIPC) {
-    return allow(VPP_DRIVER_NUM,_hIPC, ipc_03,64);
-    return hello_test 
-}
-addres = _mk_Get_Access_IP(0x8001) ;
-
 void* mk__Get_ACcess (MK_HANDLE_t _HIPC) {
 
     len = getIPClen(_hIPC);
@@ -55,12 +37,37 @@ void* mk__Get_ACcess (MK_HANDLE_t _HIPC) {
     return shared_memory 
 }*/
 
-const char* register_share(void) {
-        //char* shared_memory[128];
-        __attribute__ ((unused)) int ret =  allow(VPP_DRIVER_NUM, 0x8001, buf, 128);
-        return *buf ;
+
+void* Share(__attribute__ ((unused)) MK_HANDLE_t _hIPC) {
+    //int size_ipc = command(VPP_DRIVER_NUM,20,_hIPC,0);
+    char* shared_buffer = (char*) malloc (MK_IPC_MGT_LENGTH);
+    // Registering the share from buffer located in the other app.
+    // The buff is declared in the header file as extern variable, However
+    // it needs to be defined in the writer process that is registering this syscall
+    // + 
+    // Exposing the share slice to whoever called this function
+    // This where the actual access permission is issued.
+   __attribute__ ((unused)) int res = allow(VPP_DRIVER_NUM, 0, share, MK_IPC_MGT_LENGTH);
+
+    //memcpy(shared_buffer,share,MK_IPC_MGT_LENGTH);
+    return (void*) shared_buffer; 
 }
 
+int register_share(void* buffer) {
+        
+        return allow(VPP_DRIVER_NUM, 0x8001, buffer, 128);
+        //return *buf ;
+}
+/*
+void* _mk_Get_IPC_Access(MK_HANDLE_t _hIPC){
+
+     allow(VPP_DRIVER_NUM, _hIPC, shared_buffer, 128);
+    return *shared_buffer;
+}
 int some_subscribe_test(MK_HANDLE_t _hIPC, subscribe_cb callback, void *ud){
   return subscribe(VPP_DRIVER_NUM, _hIPC, callback, ud);
-}
+}*/
+/*
+static void register_share_cb(int a ,int b,int c ,void* buffer){
+    register_share(buffer);
+}*/

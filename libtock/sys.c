@@ -76,7 +76,7 @@ int _kill(pid_t pid, int sig)
 }
 
 caddr_t _sbrk(int incr)
-{
+{ 
   void* ret;
   ret = memop(1, incr);
   if ( ((int) ret) == TOCK_ENOMEM) {

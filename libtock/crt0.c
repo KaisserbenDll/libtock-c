@@ -12,6 +12,7 @@
 #endif
 
 extern int main(void);
+void setup_ipc_structs(void);
 
 // Allow _start to go undeclared
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
@@ -329,6 +330,19 @@ void _c_start_pic(uint32_t app_start, uint32_t mem_start) {
     yield();
   }
 }
+/*
+struct ipc {
+    uint16_t m_xID;
+    uint16_t m_uLength_IPC;
+    uint16_t m_uIX_Writer;
+    uint16_t m_uIX_Reader;
+};
+
+// IPC Initialization Routine for apps
+void setup_ipc_structs(void){
+
+}*/
+
 
 // C startup routine for apps compiled with fixed addresses (i.e. no PIC).
 //
@@ -361,8 +375,12 @@ void _c_start_nopic(uint32_t app_start, uint32_t mem_start) {
   char* bss_start = (char*)(myhdr->bss_start + mem_start);
   memset(bss_start, 0, myhdr->bss_size);
 
+  // Needed a instatiation of the IPC structs defined for a Process 
+  // In order to do that, two sections .writer_ipc and .reader_ipc are defined in 
+  // Linker script
   main();
   while (1) {
     yield();
   }
 }
+
