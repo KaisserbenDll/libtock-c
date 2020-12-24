@@ -1,33 +1,60 @@
-// #include "mailbox.h"
-#include <timer.h>
 #include "libvpp/vpp.h"
-#include <tock.h>
-// #include "internal/alarm.h"
-volatile int i = 0;
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <console.h>
 
-char buf[128];
-//char* share = 'A';
+//__attribute__ ((unused)) static uint8_t readbuf[512];
+// __attribute__ ((unused)) static uint8_t writebuf[512];
 
-//void* share;
+// This is the MAIN Process/App
+// This is "The SYS APP" (extended permissions) 
+int main(void) { 
+   
+    // Before accessing the IPC buff,handles are needed. 
+     MK_HANDLE_t main_mgt_ipc_handle = _mk_Get_IPC_Handle(MK_IPC_MAIN_MGT_ID);
+     MK_HANDLE_t mgt_main_ipc_handle = _mk_Get_IPC_Handle(MK_IPC_MGT_MAIN_ID);
+    
+    // Accessing both regions, one to map the command to be executed by the MGT Process
+    // (MK_IPC_MAIN_MGT_ID) and one to read the response from (MK_IPC_MGT_MAIN_ID).
+     void* __attribute__((aligned(256))) ptr_main_mgt = _mk_Get_Access_IPC(main_mgt_ipc_handle);
+     void __attribute__((aligned(256))) *ptr_mgt_main =  _mk_Get_Access_IPC(mgt_main_ipc_handle);
+    // Fill a data structure 
+    //uint8_t command_request = command_code[10];
+    //ptr_mgt_main = &command_request;
+    *(uint8_t*)ptr_mgt_main=0xDE;
+    //*ptr_mgt_main = 1234;
 
-int main(void) {
-  char str[128];
-  memcpy(str,buf,128);
-  int result = strcmp(buf, str);
-  if (result== 0) {
-  __attribute__((unused)) MK_ERROR_e error= _mk_Send_Signal(0x8001,0x11111111);
 
-  } else {
-  __attribute__((unused)) MK_ERROR_e error2= _mk_Send_Signal(0x8001,0x00000000);
-  }
-/*
-  char str[]="Sharing";
-  //printf("%s",str);
-  //  share = "Hello";
-*/
+    //printf("ptr addr %p",ptr_main_mgt);
+    //*(uint32_t*)ptr=0x12 ;
+
+   /* struct source {
+        uint32_t one;
+    };
+    struct source s ={1};
+    memcpy(ptr_mgt_main,&s,sizeof(s));
+    printf("Address ptr_mgt_main %p\n",ptr_mgt_main);*/
+    //*ptr_mgt_main=0x1234;
+    //printf("ptr_mgt_main %x\n",*ptr_mgt_main);
+
+
+
+    /*Fill ptr_main_mgt with the data structure 
+        "MGT service command code" + Data
+        For example for MGT_Store_Firmware_Header the ptr_main_mgt should be filled:
+        '00' + Firmware_Header_Data (Proc Descriptor+ IPC Descriptor+ ...)
+    */
+   // After  Filling the command to be executed, send the signal that the IPC got updated
+     //MK_HANDLE_t mb_main_mgt = _mk_Get_Mailbox_Handle(MK_MAILBOX_MAIN_MGT_ID);
+     __attribute__ ((unused)) MK_ERROR_e send_sig_err= _mk_Send_Signal(0x4001,MK_SIGNAL_IPC_UPDATED);
+    /*
+    // Wait for the response from MGT Process on the MK_MAILBOX_MGT_MAIN_ID
+    MK_HANDLE_t mb_mgt_main = _mk_Get_Mailbox_Handle(MK_MAILBOX_MGT_MAIN_ID);
+    _mk_Wait_Signal(mb_mgt_main,0);*/
+    /*Read the reponse in ptr_mgt_main*/
+
+
+
+
+
+  
+
+ return 0;
 }

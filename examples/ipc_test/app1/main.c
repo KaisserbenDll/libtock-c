@@ -8,6 +8,8 @@ char buf[128]="Sharing";
 int main(void) {
   // The register_share simply allows access for the AppId 1 to have
   // access over buf using the allow syscall.
-__attribute__ ((unused)) int ret =register_share(buf);
+__attribute__ ((unused)) int ret =register_share();
+printf("Address buffer App0 %p\n", buf);
+printf("Content buffer  App0%s\n", buf);
     return 0;
 }

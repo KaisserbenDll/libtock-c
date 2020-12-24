@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
+#include "libvpp/vpp.h"
 
 #include <internal/nonvolatile_storage.h>
 
@@ -45,9 +46,9 @@ static int test_all(void) {
   uint8_t readbuf[512];
   uint8_t writebuf[512];
 
-  if ((r = test(readbuf, writebuf, 256, 0,  14)) != 0) return r;
-  if ((r = test(readbuf, writebuf, 256, 20, 14)) != 0) return r;
-  if ((r = test(readbuf, writebuf, 512, 0, 512)) != 0) return r;
+  if ((r = test(readbuf, writebuf, 256, 0,  256)) != 0) return r;
+  //if ((r = test(readbuf, writebuf, 256, 20, 14)) != 0) return r;
+  //if ((r = test(readbuf, writebuf, 256, 0, 256)) != 0) return r;
 
   return 0;
 }
@@ -85,7 +86,10 @@ static int test(uint8_t *readbuf, uint8_t *writebuf, size_t size, size_t offset,
   for (size_t i = 0; i < len; i++) {
     writebuf[i] = i;
   }
-
+  writebuf[0] = 0xDE;
+  writebuf[1] = 0xAD;
+  writebuf[2] = 0xBE;
+  writebuf[3] = 0xEF;
   done = false;
   ret  = nonvolatile_storage_internal_write(offset, len);
   if (ret != 0) {
@@ -102,12 +106,15 @@ static int test(uint8_t *readbuf, uint8_t *writebuf, size_t size, size_t offset,
   }
   yield_for(&done);
 
+    test_tbf_head();
+
   for (size_t i = 0; i < len; i++) {
     if (readbuf[i] != writebuf[i]) {
       printf("\tInconsistency between data written and read at index %u\n", i);
       return -1;
     }
   }
+
 
   return 0;
 }

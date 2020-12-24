@@ -3,11 +3,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 typedef void (subscribe_cb)(int, int, int,void*);
 
 int tock_enqueue(subscribe_cb cb, int arg0, int arg1, int arg2, void* ud);

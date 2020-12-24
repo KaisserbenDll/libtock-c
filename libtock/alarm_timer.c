@@ -177,14 +177,13 @@ void delay_ms(uint32_t ms) {
                 __attribute__ ((unused)) int unused1,
                 __attribute__ ((unused)) int unused2,
                 void* ud) {
-    *((bool*)ud) = false;
-
+    *((bool*)ud) = true;
   }
   bool cond = false;
   tock_timer_t timer;
   timer_in(ms, delay_cb, &cond, &timer);
-  //yield_for(&cond); 
-  
+  yield_for(&cond); 
+
 }
 
 int yield_for_with_timeout(bool* cond, uint32_t ms) {

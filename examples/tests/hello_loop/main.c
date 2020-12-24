@@ -6,9 +6,8 @@
 #include <timer.h>
 
 int main(void) {
-  const char *a = "h";
   while (1) {
-    printf(a);
-    //delay_ms(10000);
+    printf("Hello\n");
+    delay_ms(1000);
   }
 }

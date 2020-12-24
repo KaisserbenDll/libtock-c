@@ -13,6 +13,8 @@
 
 extern int main(void);
 void setup_ipc_structs(void);
+#define VPP_DRIVER_NUM 0x90100
+#define MK_IPC_MGT_LENGTH 256
 
 // Allow _start to go undeclared
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
@@ -337,11 +339,13 @@ struct ipc {
     uint16_t m_uIX_Writer;
     uint16_t m_uIX_Reader;
 };
+*/
 
 // IPC Initialization Routine for apps
 void setup_ipc_structs(void){
-
-}*/
+    uint8_t buffer[MK_IPC_MGT_LENGTH] __attribute__((aligned(256)));
+      __attribute__ ((unused)) int res = allow(VPP_DRIVER_NUM, 0, (void*) buffer, MK_IPC_MGT_LENGTH);
+}
 
 
 // C startup routine for apps compiled with fixed addresses (i.e. no PIC).
@@ -376,8 +380,8 @@ void _c_start_nopic(uint32_t app_start, uint32_t mem_start) {
   memset(bss_start, 0, myhdr->bss_size);
 
   // Needed a instatiation of the IPC structs defined for a Process 
-  // In order to do that, two sections .writer_ipc and .reader_ipc are defined in 
-  // Linker script
+    setup_ipc_structs();
+  
   main();
   while (1) {
     yield();

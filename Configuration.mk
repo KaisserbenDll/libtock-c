@@ -21,9 +21,9 @@ READELF := -readelf
 SIZE := -size
 
 # Set default region sizes
-STACK_SIZE       ?= 4096
-APP_HEAP_SIZE    ?= 4096
-KERNEL_HEAP_SIZE ?= 2048
+STACK_SIZE       ?= 2047
+APP_HEAP_SIZE    ?= 1024
+KERNEL_HEAP_SIZE ?= 1024
 
 # PACKAGE_NAME is used to identify the application for IPC and for error reporting
 PACKAGE_NAME ?= $(shell basename "$(shell pwd)")
@@ -58,9 +58,7 @@ else
 #  rv32imac|rv32imac.0x20040040.0x80002400 # RISC-V for HiFive1b
 #  rv32imac|rv32imac.0x404*.0x8000*        # RISC-V for arty-e21
 #  rv32imc|rv32imc.0x20030040.0x10003400   # RISC-V for OpenTitan
-#  rv32imc|rv32imc_opentitan|0x20030030|0x10004400\ ipc led 
-#  rv32imc|rv32imc_opentitan|0x20031034|0x100073B0\ ipc logic
-#  rv32imc|rv32imc.0x20030080.0x10005000|0x20030080|0x10005000\ wrong addresses by tock 
+#  rv32imc|rv32imc_opentitan|0x20030840|0x100059B4\ # Second App
 
 TOCK_TARGETS ?= cortex-m0\
                 cortex-m3\
@@ -68,8 +66,8 @@ TOCK_TARGETS ?= cortex-m0\
                 rv32imac|rv32imac.0x20040040.0x80002400|0x20040040|0x80002400\
                 rv32imac|rv32imac.0x40430060.0x80004000|0x40430060|0x80004000\
                 rv32imac|rv32imac.0x40440060.0x80007000|0x40440060|0x80007000\
-                rv32imc|rv32imc_opentitan|0x20030040|0x10004400\
-                rv32imac|rv32imac_hifive|0x20040040|0x80002800
+                rv32imc|rv32imc_opentitan|0x20030080|0x10005000\
+                rv32imac|rv32imac_hifive|0x20040044|0x80002800
 endif
 
 # Generate TOCK_ARCHS, the set of architectures listed in TOCK_TARGETS
@@ -88,8 +86,8 @@ ELF2TAB_ARGS += --stack $(STACK_SIZE) --app-heap $(APP_HEAP_SIZE) --kernel-heap 
 TOOLCHAIN_cortex-m0 := arm-none-eabi
 TOOLCHAIN_cortex-m3 := arm-none-eabi
 TOOLCHAIN_cortex-m4 := arm-none-eabi
-TOOLCHAIN_rv32imac := riscv32-unknown-elf
-TOOLCHAIN_rv32imc := riscv32-unknown-elf
+TOOLCHAIN_rv32imac := riscv64-unknown-elf
+TOOLCHAIN_rv32imc := riscv64-unknown-elf
 
 # Flags for building app Assembly, C, C++ files
 # n.b. make convention is that CPPFLAGS are shared for C and C++ sources
@@ -124,13 +122,15 @@ override CPPFLAGS_rv32imc += \
       -march=rv32imc\
       -mabi=ilp32\
       -mcmodel=medlow\
+      -specs=nano.specs\
       -Wl,--no-relax   # Prevent use of global_pointer for riscv
 
 override CPPFLAGS_rv32imac += \
       -march=rv32imac\
       -mabi=ilp32\
       -mcmodel=medlow\
-      -Wl,--no-relax   # Prevent use of global_pointer for riscv
+      -specs=nano.specs\
+      -Wl,--no-relax     # Prevent use of global_pointer for riscv
 
 override LINK_LIBS_rv32 += \
       -lc -lgcc -lm -lstdc++ -lsupc++
