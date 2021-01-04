@@ -12,7 +12,7 @@ int main(void) {
     MGT_Response_Code respond = MGT_Store_Firmware_Header(fw_hdr2);
     respond = MGT_Retrieve_Firmware_Header(fw_id);
     respond = MGT_Allocate_Firmware(fw_id);
-
+    test();
     /*
     uint8_t firmware_data[16] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
     0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
