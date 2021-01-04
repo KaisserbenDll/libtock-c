@@ -8,10 +8,10 @@
 int main(void) {
     //printf("Hello");
 
-    MGT_Response_Code respond = MGT_Store_Firmware_Header(fw_hdr1);
-    respond = MGT_Store_Firmware_Header(fw_hdr2);
-     respond = MGT_Retrieve_Firmware_Header(fw_id);
-    // respond = MGT_Allocate_Firmware(fw_id);
+    //MGT_Response_Code respond = MGT_Store_Firmware_Header(fw_hdr1);
+    MGT_Response_Code respond = MGT_Store_Firmware_Header(fw_hdr2);
+    respond = MGT_Retrieve_Firmware_Header(fw_id);
+    respond = MGT_Allocate_Firmware(fw_id);
 
     /*
     uint8_t firmware_data[16] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
