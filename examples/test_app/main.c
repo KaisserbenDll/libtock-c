@@ -6,9 +6,9 @@
 
 // This is the MGT Process/App 
 int main(void) {
-    //printf("Hello");
 
-    //MGT_Response_Code respond = MGT_Store_Firmware_Header(fw_hdr1);
+    // Initial FW Service functions Support 
+    /*MGT_Response_Code respond = MGT_Store_Firmware_Header(fw_hdr1);
     MGT_Response_Code respond = MGT_Store_Firmware_Header(fw_hdr2);
     respond = MGT_Retrieve_Firmware_Header(fw_id);
     respond = MGT_Allocate_Firmware(fw_id);
@@ -27,24 +27,13 @@ int main(void) {
     //write segments and pad 
     err= _mk_Commit_SubMemoryPartition();
     int khra = test();
-
-
-    /*
-    uint8_t firmware_data[16] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
-    0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
-
-    UUID_t id =  MGT_Store_Firmware_Header(firmware_data);
-    printf("%Lf", id);
-
-    */
-    //test_tbf_head();
-    /*
+*/    
     // At this point the IPC has not been configured yet for the MAIN App 
     // That is why we wait for the signal first and then have access to the IPC.
     MK_HANDLE_t mb_main_mgt = _mk_Get_Mailbox_Handle(MK_MAILBOX_MAIN_MGT_ID);
      _mk_Wait_Signal(mb_main_mgt,0);
     // At this point we have the configured/shared MGT IPC and updated so 
-    //we can continue reading the response and processing it  
+    // we can continue reading the response and processing it  
 
     // Before accessing the IPC buff between processes, we need to get 
     // the handle of both of them. Even the MGT app needs to request the access 
@@ -56,12 +45,12 @@ int main(void) {
     // (MK_IPC_MAIN_MGT_ID) and one to send the response data (MK_IPC_MGT_MAIN_ID).
      void* __attribute__((aligned(256))) ptr_main_mgt =  _mk_Get_Access_IPC(main_mgt_ipc_handle);
      void* __attribute__((aligned(256))) ptr_mgt_main = _mk_Get_Access_IPC(mgt_main_ipc_handle);
+    /*printf("ptr addr %p",ptr_main_mgt);
     printf("ptr addr %p",ptr_main_mgt);
     printf("ptr addr %p",ptr_main_mgt);
     printf("ptr addr %p",ptr_main_mgt);
-    printf("ptr addr %p",ptr_main_mgt);
-    printf("ptr_mgt_main %u\n",* (uint8_t*)ptr_mgt_main);
-*/
+    printf("ptr_mgt_main %u\n",* (uint8_t*)ptr_mgt_main);*/
+
     // printf("ptr addr %u",*ptr_main_mgt);
 
     // Read the command from ptr_main_mgt and Send the reponse to ptr_mgt_main
