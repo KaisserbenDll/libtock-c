@@ -62,64 +62,6 @@ uint8_t Extract_Command_Code(void* ptr){
     return command_code_t; 
 
 }
-/*
-// firmware_header_data: the address of where the firmware header starts.
-UUID_t MGT_Store_Firmware_Header(uint8_t* firmware_header_data){
-
-    // 1. Parse Firmware Header
-    struct fw_descr* fw_descr = (struct fw_descr*) firmware_header_data;
-    // 2. Compare Firmware Header to capaibilites 
-
-    // 3. Extract Firmware Identifier
-    UUID_t myhdr_id = fw_descr->m_xID;
-    // 4. Retrieve Firmware Header from MGT Process NVM, based on its provided Firmware Idenftifier
-    // Perform a read from NVM 
-     // Send command syscall to mgt_service to figure out if the identifier is stored
-     // the mgt_service will send an offset != 0 if the 
-
-
-    // 5. a )If Firmware Header not found, add a new Firmware Header, store provided 
-    // Firmware Identifier as key to this record. The initial State should be Disabled.
-    // Perofrm a write operation and tell the mgt_service of the new firmware header storage
-    
-
-
-
-    // 5. b) Else Update Firmware_Header record.
-        // Perform a write to NVM
-
-
-
-        struct source {
-        int one;
-    };
-    struct source s = { 1 };
-    void* ipc_ptr = malloc(20);
-    memcpy(ipc_ptr, &s, sizeof(s));
-
-    // 1. Parse Firmware Header
-    struct source* myhdr = (struct source*) ipc_ptr;
-    //printf("source %d", myhdr->one);
-
-    
-    return myhdr_id;
-}*/
-/*
-void declare_firmware_decs() {
-    firmware_descriptor_test.m_xID = 0x11112222 ;
-    firmware_descriptor_test.m_xFamilyID=0x11112222;
-    firmware_descriptor_test.m_uHeaderLength=0x90;
-    firmware_descriptor_test.m_uVersionFormat=MK_FORMAT_VERSION;
-    firmware_descriptor_test.m_uVersionFirmware=MK_FORMAT_VERSION;
-    firmware_descriptor_test.m_uProcessCount=1;
-    firmware_descriptor_test.m_uMailboxCount=1;
-    firmware_descriptor_test.m_uIPCCount=1;
-    firmware_descriptor_test.m_uLIBCount=0;
-    firmware_descriptor_test.m_eFirmware_Software_Type=FIRMWARE_SOFTWARE_TYPE_SYSAPP;
-    firmware_descriptor_test.m_eSchedulingType=MK_SCHEDULING_TYPE_COLLABORATIVE;
-
-}*/
-
 void* allow_ipc(void){
     void* buffer;
     buffer = malloc(MK_IPC_MGT_LENGTH);

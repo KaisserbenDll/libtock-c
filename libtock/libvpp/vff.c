@@ -1,15 +1,18 @@
 #include "libvpp/vff.h"
 #include "tock.h"
 #include "libvpp/nvm.h"
+size_t size_hdr = 122;
+static void* root_ptr = NULL;
 
 // firmware_header_data: the address of where the firmware header starts.
 MGT_Response_Code MGT_Store_Firmware_Header(uint8_t* firmware_header_data){
     // 1. Parse Firmware Header
+    // 2. Compare Firmware Header to capaibilites 
+
     // Send the firmware header buffer to the kernel and let him do the parsing
     // sizeof gives me always a 4 length. -_-
     // size_t size_hdr = my_sizeof(firmware_header_data);
-    size_t size_hdr = 90;
-
+   
     int return_value = allow(VFF_DRIVER_NUM, 
                         0, 
                         (void*) firmware_header_data,
@@ -22,18 +25,7 @@ MGT_Response_Code MGT_Store_Firmware_Header(uint8_t* firmware_header_data){
         return ret;
      };
      /*
-    // 2. Compare Firmware Header to capaibilites 
-    ret = command (VFF_DRIVER_NUM,1,0,0);
-    if (ret != 0x00) {
-        // The firmware header is not supported 
-        return ret;
-    };*/
-    // 3. Extract Firmware Identifier
-    /*uint8_t ret_ext = command (VFF_DRIVER_NUM,1,0,0);
-    if (ret_ext == 0x02) {
-        // The firmware header is not supported 
-        return MGT_ERROR_INTERNAL;
-    };*/
+
     
     // 4. Retrieve Firmware Header from MGT Process NVM, based on its provided Firmware Idenftifier
     // Perform a read from NVM 
@@ -55,7 +47,7 @@ MGT_Response_Code MGT_Store_Firmware_Header(uint8_t* firmware_header_data){
         return ret;
     };*/
     // After informing the kernel, we perform a write operation in the NVM.
-    write_nvm(firmware_header_data,size_hdr,offset_returned,size_hdr);
+    //write_nvm(firmware_header_data,size_hdr,offset_returned,size_hdr);
 
 
 
@@ -96,9 +88,9 @@ MGT_Response_Code MGT_Retrieve_Firmware_Header(uint8_t* firmware_identifier){
 
      /*// Second, ask the kernel, from which offset should the FwHdr should be read
      int offset = command(VFF_DRIVER_NUM, 3, 0, 0);*/
-    uint8_t firmware_header_data[90];
+    uint8_t firmware_header_data[size_hdr];
     // Since the size of the VFF is predefined, it is hardcoded
-    read_nvm(firmware_header_data, 90,offset,90);
+    //read_nvm(firmware_header_data, size_hdr,offset,size_hdr);
     // the Firware Header should be read in firmware_header_data at this point.
     // return that pointer
 
@@ -108,7 +100,51 @@ MGT_Response_Code MGT_Retrieve_Firmware_Header(uint8_t* firmware_identifier){
 MGT_Response_Code MGT_Allocate_Firmware(uint8_t* firmware_identifier){
     // Check if firmware exists. If it does, memory offsets and values will be 
     // setup but not yet copied.
-    uint8_t ret = allow(VFF_DRIVER_NUM, 2, (void*) firmware_identifier, 16);
+    // Since size_of is buggy, i am hardcoding this.
+    size_t size_id = 16; 
+    int ret = allow(VFF_DRIVER_NUM, 2, (void*) firmware_identifier, size_id);
 
     return (MGT_Response_Code) ret;
 }
+
+MGT_Response_Code MGT_Open_Process_SubMemoryPartition(uint8_t* firmware_identifier,MK_Index_t index){
+    
+    size_t size_id = 16; 
+
+    uint32_t arg = (index << 8) | 3 ;
+    int ret = allow(VFF_DRIVER_NUM, arg, (void*) firmware_identifier, size_id);
+
+    return (MGT_Response_Code) ret;
+}
+
+int test(){
+    // delay_ms(5000);
+    int useless = command(VFF_DRIVER_NUM,2,0,0);
+    return useless;
+}
+
+MK_ERROR_e _mk_Open_SubMemoryPartition(uint8_t* _uFirmwareID){
+    // Argument should be changed to UUID_t. Then uncomment the next line
+    //uint8_t* fw_id = &_uFirmwareID;
+    MK_ERROR_e ret = (MK_ERROR_e) allow(VFF_DRIVER_NUM,4,(void*)_uFirmwareID,16);
+    return ret;
+}
+
+
+void* _mk_Assign_SubMemoryPartition(MK_Index_t sub_Memory_Partition_Index){ 
+    MK_ERROR_e ret = (MK_ERROR_e) command(VFF_DRIVER_NUM,4, sub_Memory_Partition_Index, 0);
+    if (ret = 0 ) {
+        return root_ptr;
+    } else {
+        return NULL; 
+    }
+}
+
+void write_segs(void* ptr) {
+    root_ptr = ptr;
+}
+MK_ERROR_e _mk_Commit_SubMemoryPartition(){
+    MK_ERROR_e ret = (MK_ERROR_e) allow(VFF_DRIVER_NUM,5,root_ptr,100);
+    return ret;
+}
+
