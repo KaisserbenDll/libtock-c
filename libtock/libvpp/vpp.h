@@ -18,7 +18,7 @@ extern "C" {
 #define DRIVER_NUM_ALARM 0x0
 
 // Testing variable for IPC length 
-#define MK_IPC_MGT_LENGTH 256
+#define MK_IPC_MGT_LENGTH 512
 
 
 // Index of an element in a typed array 
@@ -174,36 +174,6 @@ struct vff_header{
     struct ipc_descr  ipc_descriptor;
 };
 
-static const uint8_t command_code[13] = {
-        0x00, 0x01 , 0x02, 0x03, 0x04, 0x05, 0x06,
-        0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C
-};
-
-//struct fw_descr firmware_descriptor_test;
-//void declare_firmware_decs(void);
-
-
-/*
-typedef enum {
-    MGT_Store_Firmware_Header=0x00,
-    MGT_Retrieve_Firmware_Header=0x01,
-    MGT_Allocate_Firmware=0x02,
-    MGT_Delete_Firmare=0x03,
-    MGT_Enable_Firmware=0x04,
-    MGT_Disable_Firmware=0x05,
-    MGT_Is_Firmware_Enabled=0x06,
-    MGT_Open_Process_SubMemoryPartition=0x07,
-    MGT_Close_Process_SubMemoryPartition=0x08
-}MGT_Command_Code;*/
-typedef enum{
-    MGT_ERROR_NONE=0x00,
-    MGT_ERROR_ILLEGAL_PARAMETER=0x01,
-    MGT_ERROR_INTERNAL=0x02, 
-    MGT_ERROR_UNKNOWN_UUID=0x03,
-    MGT_ERROR_COMMAND_NOK=0x04
-}MGT_Response_Code;
-
-
 // Gerneric Functions 
     // MK_BITMAP_t _mk_Get_Exception(MK_HANDLE_t _hProcess);
     MK_ERROR_e _mk_Get_Error(MK_HANDLE_t _hProcess);
@@ -237,30 +207,6 @@ void _mk_Wait_Signal(MK_HANDLE_t _hMailbox, uint32_t _utime);
 MK_HANDLE_t _mk_Get_IPC_Handle(MK_IPC_ID_u _eIPC_ID); 
 void* _mk_Get_Access_IPC( MK_HANDLE_t _hIPC);
 
-// Firmware Management ABI/API
-
-
-// Firmware Management Service 
-
-// The command code will be transfered through ipc and a use case
-// will be used to call these functions accordingly
-// 1) Firmware Header Management 
-/*UUID_t MGT_Store_Firmware_Header(uint8_t* firmware_header_data);
-MGT_Response_Code MGT_Retrieve_Firmware_Header(UUID_t firmware_identifier);
-
-// 2) Firmware State Management
-MGT_Response_Code MGT_Enable_Firmware(UUID_t firmware_identifier);
-MGT_Response_Code MGT_Disable_Firmware(UUID_t firmware_identifier);
-MGT_Response_Code MGT_Is_Firmware_Enabled(UUID_t firmware_identifier); 
-MGT_Response_Code MGT_Delete_Firmare(UUID_t firmware_identifier);
-
-// 3) Firmware Content Management
-MGT_Response_Code MGT_Open_Process_SubMemoryPartition(UUID_t firmware_identifier,MK_Index_t index);
-MGT_Response_Code MGT_Close_Process_SubMemoryPartition(void);
-MGT_Response_Code MGT_Allocate_Firmware(UUID_t firmware_identifier);
-
-*/
-
 // Helper Functions for Firmware MGT service 
 // Parse the first Byte from a pointer 
 uint8_t Extract_Command_Code(void* ptr);
@@ -269,7 +215,7 @@ uint8_t Extract_Command_Code(void* ptr);
 uint8_t* get_adress_nvm_memory(void);
 //void init_mgt_proc(void);
 
-#define MK_IPC_MGT_LENGTH 256
+
 void* allow_ipc(void);
 
 int test_tbf_head(void);

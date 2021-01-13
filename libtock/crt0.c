@@ -14,7 +14,7 @@
 extern int main(void);
 void setup_ipc_structs(void);
 #define VPP_DRIVER_NUM 0x90100
-#define MK_IPC_MGT_LENGTH 256
+#define MK_IPC_MGT_LENGTH 512
 
 // Allow _start to go undeclared
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
@@ -343,8 +343,10 @@ struct ipc {
 
 // IPC Initialization Routine for apps
 void setup_ipc_structs(void){
-    uint8_t buffer[MK_IPC_MGT_LENGTH] __attribute__((aligned(256)));
-      __attribute__ ((unused)) int res = allow(VPP_DRIVER_NUM, 0, (void*) buffer, MK_IPC_MGT_LENGTH);
+    uint8_t buffer[MK_IPC_MGT_LENGTH] __attribute__((aligned(512))) ;
+    memset(buffer,0,MK_IPC_MGT_LENGTH);
+      __attribute__ ((unused)) int res = allow(VPP_DRIVER_NUM, 0, 
+      (void*) buffer, sizeof(buffer));
 }
 
 

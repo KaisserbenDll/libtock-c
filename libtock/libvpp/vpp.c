@@ -40,6 +40,7 @@ static void cb( __attribute__ ((unused)) int unused0,
 void _mk_Wait_Signal(MK_HANDLE_t _hMailbox,__attribute__ ((unused)) uint32_t _utime){
    __attribute__ ((unused)) int res = subscribe(VPP_DRIVER_NUM,_hMailbox,cb,NULL);
     yield_for(&signal_found_or_timeout); 
+    signal_found_or_timeout = false;
 } 
 
 // IPC Management
@@ -49,13 +50,14 @@ MK_HANDLE_t _mk_Get_IPC_Handle(MK_IPC_ID_u _eIPC_ID){
 
 void* _mk_Get_Access_IPC( MK_HANDLE_t _hIPC){
     int ret =  command(VPP_DRIVER_NUM,15,_hIPC,0);
+    //  printf("Address given %x", ret);
      return (void*) ret;
 }
-
+/*
 uint8_t* get_adress_nvm_memory(void){
     int ret = command(VPP_DRIVER_NUM,30,0,0);
     return (uint8_t*) ret;
-}
+}*/
 
 uint8_t Extract_Command_Code(void* ptr){
     uint8_t command_code_t = *((uint8_t*) ptr);
