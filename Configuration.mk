@@ -21,7 +21,7 @@ READELF := -readelf
 SIZE := -size
 
 # Set default region sizes
-STACK_SIZE       ?= 3096
+STACK_SIZE       ?= 2048
 APP_HEAP_SIZE    ?= 1024
 KERNEL_HEAP_SIZE ?= 1024
 
@@ -66,7 +66,7 @@ TOCK_TARGETS ?= cortex-m0\
                 rv32imac|rv32imac.0x20040040.0x80002400|0x20040040|0x80002400\
                 rv32imac|rv32imac.0x40430060.0x80004000|0x40430060|0x80004000\
                 rv32imac|rv32imac.0x40440060.0x80007000|0x40440060|0x80007000\
-                rv32imc|rv32imc_opentitan|0x20030880|0x10009c00\
+                rv32imc|rv32imc_opentitan|0x20030880|0x100091d8\
                 rv32imac|rv32imac_hifive|0x20040044|0x80002800
 endif
 
