@@ -1,8 +1,6 @@
 #include "libvpp/vpp.h"
 #include "libvpp/vff.h"
 
-
-
 // This is the MGT Process/App 
 int main(void) {
     // Get Main and Mgt Mailboxes
