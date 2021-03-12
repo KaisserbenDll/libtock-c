@@ -25,6 +25,8 @@ int main(void) {
   param.m_Write_OUT+=1;
   // Map the data structure to IPC 
   memcpy(ptr_main_com,&param,sizeof(param));
+  int  ret = allow(VPP_DRIVER_NUM,99,ptr_main_com,30);
+
   // Send MK_IPC_UPDATED
     MK_ERROR_e send_sig_err= _mk_Send_Signal(0x8000,MK_SIGNAL_IPC_UPDATED);
     _mk_Wait_Signal(0x4000,0);
@@ -43,7 +45,7 @@ int main(void) {
     param1.m_Buff_OUT = read_struct.m_Buff_IN;
     memcpy(ptr_main_com,&param1,sizeof(param1));
 
-//    retur = allow(VPP_DRIVER_NUM,2,ptr_main_com,30);
+  ret = allow(VPP_DRIVER_NUM,99,ptr_main_com,30);
 
 
  return 0;

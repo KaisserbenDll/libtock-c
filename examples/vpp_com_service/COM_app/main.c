@@ -6,9 +6,10 @@ int main(void) {
     // MK_HANDLE_t mb_main_com = _mk_Get_Mailbox_Handle(MK_MAILBOX_MAIN_COM_ID);
     // MK_HANDLE_t mb_mgt_main = _mk_Get_Mailbox_Handle(MK_MAILBOX_COM_MAIN_ID);
     // Get IPCs
+    _mk_Wait_Signal(0x8000,0);
+
     MK_HANDLE_t main_com_ipc_handle = _mk_Get_IPC_Handle(MK_IPC_MAIN_COM_ID);
     MK_HANDLE_t com_main_ipc_handle = _mk_Get_IPC_Handle(MK_IPC_COM_MAIN_ID);
-    _mk_Wait_Signal(0x8000,0);
     uint8_t*  ptr_main_com = _mk_Get_Access_IPC(com_main_ipc_handle);
     uint8_t*  ptr_com_main =  _mk_Get_Access_IPC(main_com_ipc_handle);
 
@@ -26,14 +27,12 @@ int main(void) {
     param.m_Write_OUT = read_struct.m_Write_IN;
     param.m_Buff_OUT = read_struct.m_Buff_IN;
 
-
+    
     // Perform Write Operation
-    ((uint16_t*) param.m_Buff_OUT)[param.m_Write_OUT]=0xEE ;
-
-    //(*(uint16_t*)param.m_Buff_OUT)[param.m_Write_OUT] = 0xEE;    
+    //((uint16_t*) param.m_Buff_OUT)[param.m_Write_OUT]=0xEE ;
+    
     param.m_Write_OUT+=1;
     memcpy(ptr_com_main,&param,sizeof(param));
-    //int retur =allow(VPP_DRIVER_NUM,2,ptr_com_main,30);
 
    // Send MK_IPC_UPDATED
      MK_ERROR_e send_sig_err= _mk_Send_Signal(0x4000,MK_SIGNAL_IPC_UPDATED);
