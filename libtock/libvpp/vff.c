@@ -36,7 +36,7 @@ static void* root_ptr = NULL;
     0x7b, 0xce, 
     0xd1, 0xb8};
 // Another Firmware Header used for Testing 
-uint8_t fw_hdr2[122]={
+__attribute__ ((unused))  uint8_t fw_hdr2[122]={
     0xde, 0xad, 0xbe, 0xef, 0xda, 0xad, 0xff, 0xff,
     0xde, 0xad, 0xbe, 0xef, 0xda, 0xad, 0xff, 0xff,
     0xde, 0xad, 0xbe, 0xef, 0xda, 0xad, 0xff, 0xff,
@@ -140,7 +140,7 @@ MGT_Response_Code MGT_Store_Firmware_Header(uint8_t* firmware_header_data){
 }
 MGT_Response_Code MGT_Retrieve_Firmware_Header(uint8_t* firmware_identifier){
     // First check if the Firmware id exists
-    // Since size_of is buggy, i am hardcoding this.
+    // Since sizeof is buggy, i am hardcoding this.
     size_t size_id = 16; 
      int ret_value = allow(VFF_DRIVER_NUM, 
                                 1,
@@ -155,7 +155,7 @@ MGT_Response_Code MGT_Retrieve_Firmware_Header(uint8_t* firmware_identifier){
      };
 
      /*// Second, ask the kernel, from which offset should the FwHdr should be read
-     int offset = command(VFF_DRIVER_NUM, 3, 0, 0);*/
+     int offset = command(VFF_DRIVER_NUM, 4, 0, 0);*/
     uint8_t firmware_header_data[size_hdr];
     // Since the size of the VFF is predefined, it is hardcoded
     read_nvm(firmware_header_data, size_hdr,offset,size_hdr);
@@ -193,7 +193,7 @@ MGT_Response_Code MGT_Open_Process_SubMemoryPartition(uint8_t* firmware_identifi
 
 
 MGT_Response_Code MGT_Close_Process_SubMemoryPartition(void){
-    MGT_Response_Code ret = command(VFF_DRIVER_NUM,6, 0, 0);
+    MGT_Response_Code ret = command(VFF_DRIVER_NUM,3, 0, 0);
     return ret;
 }
 
@@ -206,8 +206,9 @@ MK_ERROR_e _mk_Open_SubMemoryPartition(uint8_t* _uFirmwareID){
 }
 
 void* _mk_Assign_SubMemoryPartition(MK_Index_t sub_Memory_Partition_Index){ 
-    MK_ERROR_e ret = command(VFF_DRIVER_NUM,4, sub_Memory_Partition_Index, 0);
+    MK_ERROR_e ret = command(VFF_DRIVER_NUM,1, sub_Memory_Partition_Index, 0);
     if (ret == 0 ) {
+        root_ptr = NULL; 
         return root_ptr;
     } else {
         return NULL; 
@@ -220,21 +221,20 @@ MK_ERROR_e _mk_Commit_SubMemoryPartition(void){
 }
 
 MK_ERROR_e _mk_Close_SubMemoryPartition(void){
-    MK_ERROR_e ret = command(VFF_DRIVER_NUM,5, 0, 0);
+    MK_ERROR_e ret = command(VFF_DRIVER_NUM,2, 0, 0);
     return ret;
 }
 
 // Helper Functions
-void test(void){
-    // delay_ms(5000);
-    int useless = command(VFF_DRIVER_NUM,2,0,0);
-
-}
+/*void write_segs(uint8_t* section) {
+    root_ptr = &section;
+}*/
 void write_segs(void* ptr) {
     root_ptr = ptr;
 }
-
-MGT_Response_Code Read_Command(uint8_t* command_data){
+// Read the first byte of the command_data and interpret the command. Based on that command, 
+// an operation in the kernel is executed.
+MGT_Response_Code Read_Execute_Command(uint8_t* command_data){
     uint8_t command = command_data[0];
     command_data+=1;
     MGT_Response_Code response = MGT_ERROR_COMMAND_NOK; 
@@ -262,8 +262,8 @@ MGT_Response_Code Read_Command(uint8_t* command_data){
     return response;
 }
 
-
-
+// Sends a command to be executed following a certain format expected from the MGT app. 
+// Map it on the IPC (write_buf) afterwards.
 void send_from_main_to_mgt(uint8_t* write_buf,
                             uint8_t*buf, 
                             uint8_t command,
@@ -297,9 +297,13 @@ void send_from_main_to_mgt(uint8_t* write_buf,
     _mk_Wait_Signal(0x4001,0);
 }
 
+// This function reads a command from the IPC (read_buf), executes it and maps the returned reponse 
+// on the IPC (write_buf). Afterwards, it waits for a signal to be received on its Mailbox
 void read_command_from_mgt(uint8_t* read_buf,
                            uint8_t* write_buf){
-    MGT_Response_Code response = Read_Command(read_buf);
+    // 0x8001 and 0x4001 are the IDs of the mailboxes
+    // These are hardcoded. These should be retrieved handles however.
+    MGT_Response_Code response = Read_Execute_Command(read_buf);
     write_buf[0] = response;
     MK_ERROR_e send_sig_err= _mk_Send_Signal(0x4001,MK_SIGNAL_IPC_UPDATED);
     // Wait for MK_SIGNAL_IPC_UPDATED

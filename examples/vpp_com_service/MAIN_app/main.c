@@ -1,22 +1,16 @@
 #include "libvpp/vpp.h"
-#include "libvpp/vff.h"
 #include "libvpp/com.h"
 
-extern uint8_t fw_hdr2[122];
-extern uint8_t fw_id[16]; 
 // This is the MAIN Process/App
-// This is "The SYS APP" (extended permissions) 
 int main(void) { 
     // Get Mailboxes.
     // MK_HANDLE_t mb_main_mgt = _mk_Get_Mailbox_Handle(MK_MAILBOX_MAIN_MGT_ID);
     // MK_HANDLE_t mb_mgt_main = _mk_Get_Mailbox_Handle(MK_MAILBOX_MGT_MAIN_ID);
     // Get IPCs
-    // MK_HANDLE_t main_mgt_ipc_handle = _mk_Get_IPC_Handle(MK_IPC_MAIN_MGT_ID);
-    // MK_HANDLE_t mgt_main_ipc_handle = _mk_Get_IPC_Handle(MK_IPC_MGT_MAIN_ID);
-    //uint8_t*  ptr_main_mgt = _mk_Get_Access_IPC(0x4001);
-   // uint8_t*  ptr_mgt_main =  _mk_Get_Access_IPC(0x8001);
-    uint8_t*  ptr_main_com = _mk_Get_Access_IPC(0x4000);
-    uint8_t*  ptr_com_main =  _mk_Get_Access_IPC(0x8000);
+    MK_HANDLE_t com_main_ipc_handle = _mk_Get_IPC_Handle(MK_IPC_COM_MAIN_ID);
+    MK_HANDLE_t main_com_ipc_handle = _mk_Get_IPC_Handle(MK_IPC_MAIN_COM_ID);
+    uint8_t*  ptr_main_com = _mk_Get_Access_IPC(main_com_ipc_handle);
+    uint8_t*  ptr_com_main =  _mk_Get_Access_IPC(com_main_ipc_handle);
 
   // Perform a Write FIFO OUT Operation
   struct parameters_struct param ;
@@ -31,10 +25,9 @@ int main(void) {
   param.m_Write_OUT+=1;
   // Map the data structure to IPC 
   memcpy(ptr_main_com,&param,sizeof(param));
-    int retur =allow(VPP_DRIVER_NUM,2,ptr_main_com,30);
   // Send MK_IPC_UPDATED
-  MK_ERROR_e send_sig_err= _mk_Send_Signal(0x8000,MK_SIGNAL_IPC_UPDATED);
-  _mk_Wait_Signal(0x4000,0);
+    MK_ERROR_e send_sig_err= _mk_Send_Signal(0x8000,MK_SIGNAL_IPC_UPDATED);
+    _mk_Wait_Signal(0x4000,0);
 
     // Perform a Read FIFO IN Operation
     struct return_struct read_struct = *(struct return_struct*) ptr_com_main ;  
@@ -50,23 +43,8 @@ int main(void) {
     param1.m_Buff_OUT = read_struct.m_Buff_IN;
     memcpy(ptr_main_com,&param1,sizeof(param1));
 
-    retur = allow(VPP_DRIVER_NUM,2,ptr_main_com,30);
-
-    
-    // Definition of FIFO_IN
-    /*struct return_struct read_response;
-    uint16_t* buff_in[m_Size_IN_init] = {0}; 
-    read_response.m_MTU_IN  = m_MTU_IN_init ; 
-    read_response.m_Size_In = m_Size_IN_init; 
-    read_response.m_Read_OUT= m_Read_OUT_init;
-    read_response.m_Write_IN= m_Write_IN_init;
-    read_response.m_Buff_IN= (void*) buff_in;*/
+//    retur = allow(VPP_DRIVER_NUM,2,ptr_main_com,30);
 
 
-    
-
-    //
-
-     
  return 0;
 }

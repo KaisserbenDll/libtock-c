@@ -11,6 +11,7 @@
 #define MGT_Allocate_Firmware_command 0x02
 #define MGT_Open_Process_SubMemoryPartition_command 0x07
 #define MGT_Close_Process_SubMemoryPartition_command 0x08
+
 // Index of Sub Memory Partition
 # define SubMemPart_CODE_i 0 
 # define SubMemPart_CONSTANT_i 1 
@@ -23,8 +24,6 @@ typedef enum{
     MGT_ERROR_UNKNOWN_UUID=0x03,
     MGT_ERROR_COMMAND_NOK=0x04
 }MGT_Response_Code;
-
-void test(void);
 
 // 1) Firmware Header Management 
 MGT_Response_Code MGT_Store_Firmware_Header(uint8_t* firmware_header_data);
@@ -49,9 +48,10 @@ MK_ERROR_e _mk_Commit_SubMemoryPartition(void);
 MK_ERROR_e _mk_Close_SubMemoryPartition(void);
 
 // Helper Functions
-
 MGT_Response_Code Read_Command(uint8_t* command_data);
-
-void send_from_main_to_mgt(uint8_t* write_buf,uint8_t*buf, 
-uint8_t command, size_t size, uint8_t index);
+void send_from_main_to_mgt( uint8_t* write_buf,
+                            uint8_t*buf, 
+                            uint8_t command, 
+                            size_t size, 
+                            uint8_t index);
 void read_command_from_mgt(uint8_t* read_buf, uint8_t* write_buf);

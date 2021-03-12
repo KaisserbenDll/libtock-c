@@ -89,6 +89,13 @@ typedef enum {
     FIRMWARE_SOFTWARE_TYPE_LLOS = 0x08,
 }VPP_FRW_TYPE_e; 
 
+typedef enum {
+    MK_PROCESS_PRIORITY_LOW = 0x0000,
+    MK_PROCESS_PRIORITY_NORMAL = 0x0004,
+    MK_PROCESS_PRIORITY_HIGH = 0x0008,  
+    MK_PROCESS_PRIORITY_ERROR = 0xFFFF,
+}MK_PROCESS_PRIORITY_e; 
+
 typedef enum{
     MK_SCHEDULING_TYPE_COLLABORATIVE = 0x01,
     MK_SCHEDULING_TYPE_PREEMPTIVE = 0x02,
@@ -175,32 +182,29 @@ struct vff_header{
 };
 
 // Gerneric Functions 
-    // MK_BITMAP_t _mk_Get_Exception(MK_HANDLE_t _hProcess);
-    MK_ERROR_e _mk_Get_Error(MK_HANDLE_t _hProcess);
-    MK_TIME_t _mk_Get_Time(void);
+MK_BITMAP_t _mk_Get_Exception(MK_HANDLE_t _hProcess);
+MK_ERROR_e _mk_Get_Error(MK_HANDLE_t _hProcess);
+MK_TIME_t _mk_Get_Time(void);
 
 // Process Management 
-    MK_HANDLE_t _mk_Get_Process_Handle(MK_PROCESS_ID_u _eProcess_ID);
-    //MK_ERROR_e _mk_Set_Process_Priority(MK_HANDLE_t _hProcess, MK_PROCESS_PRIORITY_e _xPriority);
-    // MK_ERROR_e _mk_Suspend_Process(MK_HANDLE_t _hProcess);
-    // MK_ERROR_e _mk_Resume_Process(MK_HANDLE_t _hProcess);
-    //MK_ERROR_e _mk_Request_No_Preemption(uint32_t _uTime);
-    // void_mk_Commit(void);
-    // void_mk_RollBack(void);
-    // void_mk_Yield(void);
-
-
+MK_HANDLE_t _mk_Get_Process_Handle(MK_PROCESS_ID_u _eProcess_ID);
+MK_PROCESS_PRIORITY_e _mk_Get_Process_Priority(MK_HANDLE_t _hProcess);
+MK_ERROR_e _mk_Set_Process_Priority(MK_HANDLE_t _hProcess, MK_PROCESS_PRIORITY_e _xPriority);
+MK_ERROR_e _mk_Suspend_Process(MK_HANDLE_t _hProcess);
+MK_ERROR_e _mk_Resume_Process(MK_HANDLE_t _hProcess);
+//MK_ERROR_e _mk_Request_No_Preemption(uint32_t _uTime);
+void_mk_Commit(void);
+void_mk_RollBack(void);
+void_mk_Yield(void);
 
 // Mailbox Management 
-//    MK_HANDLE_t _mk_Get_Mailbox_Handle(MK_MAILBOX_ID_u _eMailboxID)
 // Get a Mailbox Handle from a Mailbox Identifier 
 MK_HANDLE_t _mk_Get_Mailbox_Handle(MK_MAILBOX_ID_u _eMailboxID);
 // Send a Signal to a specific mailbox
 MK_ERROR_e _mk_Send_Signal(MK_HANDLE_t _hMailbox, MK_BITMAP_t _eSignal);
 // Retrieve last Signal from Mailbox. Signals are cleared once read.
 MK_BITMAP_t _mk_Get_Signal(MK_HANDLE_t _hMailbox);
-
-
+// Wait for a signal on a Mailbox.
 void _mk_Wait_Signal(MK_HANDLE_t _hMailbox, uint32_t _utime);
 
 // IPC Management
@@ -210,16 +214,6 @@ void* _mk_Get_Access_IPC( MK_HANDLE_t _hIPC);
 // Helper Functions for Firmware MGT service 
 // Parse the first Byte from a pointer 
 uint8_t Extract_Command_Code(void* ptr);
-
-// Misc 
-uint8_t* get_adress_nvm_memory(void);
-//void init_mgt_proc(void);
-
-
-void* allow_ipc(void);
-
-int test_tbf_head(void);
-
 #ifdef __cplusplus
 }
 #endif
